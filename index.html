@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMART ALARM</title>
+    <link rel="icon" type="image/icon" href="./assets/ico-robot.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="script.js" defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alata&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="content">
+        <div class="upper">
+            <div class="welcome">
+                <div class="welcome-text">
+                    WELCOME AQIL!
+                </div>
+            </div>
+            <div class="temp">
+                <div class="temp-no">
+                    29°c
+                </div>
+                <div class="temp-logo">
+                    <img src="./assets/matahari.png" alt="">
+                </div>
+            </div>
+        </div>
+        <div class="status">
+            <div class="title-status">
+                <div class="status-text">Recent Status</div>
+            </div>
+            <div class="card">
+                <div id="carousel">
+                    <div class="item">
+                        <div class="logo">
+                            <img class="turbidity-logo" src="./assets/turbidity-logo.png" alt="">
+                        </div>
+                        <div class="nilai">
+                            <div class="angka" id="turbidity_sensor">
+                            </div>
+                            <div class="satuan">NTU</div>
+                        </div>
+                        <div class="jenis">
+                            Turbidity
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="logo">
+                            <img class="do-logo" src="./assets/do-logo.png" alt="">
+                        </div>
+                        <div class="angka" id="do_sensor">
+                        </div>
+                        <div class="jenis">
+                            DO
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="logo">
+                            <img class="ph-logo" src="./assets/ph-logo.png" alt="">
+                        </div>
+                        <div class="angka" id="ph_sensor">
+                        </div>
+                        <div class="jenis">
+                            pH
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="graph">
+            <div class="title-graph">
+                <div class="daily">Daily Stats</div>
+                <div class="running">Running 1h</div>
+            </div>
+            <div class="graph-bar">
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+        <div class="div-robot">
+            <img class= "robot" src="./assets/robot.png" alt="">
+        </div>    
+    </div>
+</body>
+</html>
