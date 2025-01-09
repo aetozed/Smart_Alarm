@@ -129,4 +129,4 @@ setInterval(() => {
 
     // Update the chart
     myChart.update();
-}, 60000); // 10 seconds
+}, 10000); // 10 seconds
