@@ -13,21 +13,35 @@ const firebaseConfig = {
     appId: "1:865584129322:web:75b3072256e41191822a53"
 };
 
-// Initialize Firebase and the database instance
+// Initialize Firebase and database
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
+
+// Debugging: Log user agent for mobile testing
+console.log("📱 User Agent:", navigator.userAgent);
 
 // HTML element references
 const ph_text = document.getElementById("ph_sensor");
 const do_text = document.getElementById("do_sensor");
 const turbidity_text = document.getElementById("turbidity_sensor");
 
-// Variables to store the latest sensor values
+// Variables for latest sensor values
 let latest_ph_value = 0;
 let latest_do_value = 0;
 let latest_turbidity_value = 0;
 
-// Firebase listeners
+// Request Notification Permission
+document.addEventListener("DOMContentLoaded", () => {
+    if (!("Notification" in window)) {
+        console.log("❌ Notifications not supported in this browser.");
+        return;
+    }
+    Notification.requestPermission().then(permission => {
+        console.log("🔔 Notification permission:", permission);
+    });
+});
+
+// Firebase Listeners for Sensor Data
 const ph_ref = ref(database, 'Sensor/PH');
 onValue(ph_ref, (snapshot) => {
     latest_ph_value = snapshot.val();
@@ -46,38 +60,50 @@ onValue(turbidity_ref, (snapshot) => {
     turbidity_text.innerHTML = latest_turbidity_value;
 });
 
-// Notification for alarm
+// 🔔 Notification Trigger when Alarm = 1
 const alarm_ref = ref(database, 'Sensor/Alarm');
 onValue(alarm_ref, (snapshot) => {
     const alarm_value = snapshot.val();
-    if (alarm_value === 1) {
-        Notification.requestPermission().then(perm => {
-            if (perm === "granted") {
-                new Notification("Smart Alarm", {
-                    body: "Terdeteksi air tercemar",
-                    icon: "./assets/ico-robot.png",
-                    tag: "Air Tercemar"
-                });
-            }
-        });
+    console.log("🚨 Alarm Value:", alarm_value); // Debugging
+
+    if (alarm_value === 1 && document.visibilityState === "visible") {
+        sendNotification();
     }
 });
 
-// Chart setup
+function sendNotification() {
+    if (Notification.permission === "granted") {
+        new Notification("Smart Alarm", {
+            body: "Terdeteksi air tercemar",
+            icon: "./assets/ico-robot.png",
+            tag: "AirTercemar"
+        });
+        console.log("✅ Notification sent!");
+    } else {
+        console.log("⚠️ Notification permission denied.");
+    }
+}
+
+// Detect Page Visibility (Debugging)
+document.addEventListener("visibilitychange", () => {
+    console.log("👀 Page Visibility:", document.visibilityState);
+});
+
+// Chart Setup
 var data_do = [];
 var data_ph = [];
 var data_tur = [];
 const labels = [];
 
-// Initialize the first timestamp
-let currentTimestamp = new Date(); // Current time
+// Initialize timestamp
+let currentTimestamp = new Date();
 
 // Function to format time as HH:MM
 function formatTime(date) {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-// Dynamic labels
+// Dynamic labels for Chart.js
 const ctx = document.getElementById('myChart');
 
 const myChart = new Chart(ctx, {
@@ -107,26 +133,26 @@ const myChart = new Chart(ctx, {
     options: {}
 });
 
-// Function to update data every 10 seconds
+// Update Chart Every 10 Seconds
 setInterval(() => {
-    // Add the latest sensor values to the respective arrays
     if (labels.length >= 10) {
         labels.shift();
         data_ph.shift();
         data_do.shift();
         data_tur.shift();
     }
-    // Add the current or incremented timestamp to labels
+
+    // Add the new timestamp label
     labels.push(formatTime(currentTimestamp));
 
-    // Increment the timestamp by 20 minutes for the next label
+    // Increment time by 10 minutes
     currentTimestamp.setMinutes(currentTimestamp.getMinutes() + 10);
 
-    // Add sensor values to datasets
+    // Add latest sensor values to chart
     data_ph.push(latest_ph_value);
     data_do.push(latest_do_value);
     data_tur.push(latest_turbidity_value);
 
-    // Update the chart
+    // Update chart
     myChart.update();
-}, 10000); // 10 seconds
+}, 10000); // Update every 10 seconds
